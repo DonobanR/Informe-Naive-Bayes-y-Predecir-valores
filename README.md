@@ -13,200 +13,220 @@
 - Leonardo Maldonado
 
 ---
-
-## 1. Introducción
-
-La evaluación crediticia es una de las tareas más críticas en el sector financiero. Determinar si un cliente representa un riesgo al momento de otorgarle un préstamo implica analizar múltiples factores de forma simultánea, lo cual puede ser difícil de escalar manualmente.
-
-Los árboles de decisión son modelos de aprendizaje supervisado que permiten construir reglas de clasificación a partir de datos históricos. Su estructura jerárquica y legible los convierte en una herramienta ideal para este tipo de escenarios, ya que la lógica de clasificación puede auditarse, explicarse y trasladarse directamente a código.
-
-En este laboratorio se parte de un dataset histórico de decisiones crediticias (`dataset.arff`), se entrena un árbol de decisión en Weka usando el algoritmo J48 (implementación de C4.5), y finalmente se traduce la lógica del árbol a una aplicación interactiva en Python.
+# Predicción de valores en Weka
 
 ---
 
-## 2. Objetivo
+## Introducción
 
-Construir un modelo de árbol de decisión capaz de clasificar solicitudes de crédito como **seguras (safe)** o **riesgosas (risky)**, partiendo del dataset `dataset.arff`, y representar dicho modelo en código Python funcional con interfaz interactiva para el ingreso de datos.
+La minería de datos permite extraer conocimiento útil a partir de conjuntos de
+datos mediante modelos capaces de reconocer patrones y, con ellos, predecir
+valores desconocidos. Weka es una de las herramientas más utilizadas en este
+campo, ya que integra un amplio conjunto de algoritmos de clasificación,
+agrupamiento y asociación en un entorno gráfico sencillo.
+
+En esta práctica se trabaja con el conjunto de datos `weather.nominal.arff`, un
+ejemplo clásico que relaciona condiciones meteorológicas (estado del cielo,
+temperatura, humedad y viento) con la decisión de jugar o no. El propósito es
+construir una instancia de prueba con el valor de la clase desconocido y emplear
+clasificadores para que el sistema prediga dicho valor de forma automática.
 
 ---
 
-## 3. Desarrollo
+## Objetivo
 
-### 3.1 Dataset — `dataset.arff`
+Crear una instancia de prueba en Weka, dejando en blanco el atributo de clase, y
+utilizar los clasificadores **NaiveBayes** y **J48** sobre el conjunto
+`weather.nominal.arff` para predecir el valor desconocido, comparando los
+resultados obtenidos por ambos algoritmos.
 
-El archivo `dataset.arff` define la relación `loan_risk` con **1000 instancias** y los siguientes atributos categóricos:
+---
 
-| Atributo       | Valores posibles               | Rol        |
-|----------------|-------------------------------|------------|
-| `Age`          | young, middle-aged, senior    | Predictor  |
-| `Income`       | low, medium, high             | Predictor  |
-| `Loan_History` | poor, average, good           | Predictor  |
-| `Loan_Decision`| risky, safe                   | Clase      |
+## Desarrollo
 
-El formato ARFF es el estándar de Weka para describir conjuntos de datos. La sección `@RELATION` nombra el dataset, `@ATTRIBUTE` define cada columna con sus posibles valores, y `@DATA` contiene las instancias:
+A continuación se describe el procedimiento realizado paso a paso, acompañado de
+las capturas correspondientes.
 
-```
-@RELATION loan_risk
+### Preparación de la instancia de prueba
 
-@ATTRIBUTE Age          {middle-aged,senior,young}
-@ATTRIBUTE Income       {high,low,medium}
-@ATTRIBUTE Loan_History {average,good,poor}
-@ATTRIBUTE Loan_Decision {risky,safe}
+**1.** En el menú principal de Weka se hace clic en **Tools** y se selecciona
+**ArffViewer**.
 
-@DATA
-young,low,poor,risky
-middle-aged,low,average,risky
-young,medium,poor,risky
-...
-```
+**2.** Se abre el archivo de datos con **File → Open**, seleccionando
+`weather.nominal.arff`.
 
-Algunos patrones observables en el dataset:
-- Clientes `young` con ingresos `low` e historial `poor` son consistentemente clasificados como `risky`.
-- Clientes `middle-aged` o `senior` con ingresos `high` tienden a ser `safe`.
-- El historial crediticio resulta ser el factor más discriminante.
+**3.** Se seleccionan todos los registros **excepto uno**, que se reserva como
+registro de prueba, y se eliminan con **Edit → Delete Instances**.
 
-### 3.2 Árbol de Decisión generado en Weka (J48)
+**4.** Se modifican los valores del registro restante, asignándole los valores
+que se desean utilizar como instancia de prueba mediante las herramientas de
+edición del ArffViewer.
 
-Al cargar el dataset en Weka y aplicar el clasificador **J48**, se genera el siguiente árbol:
+**5.** Se deja **en blanco** el atributo de clase, ya que ese es el valor que se
+desea que prediga el clasificador.
 
-<img width="1250" height="676" alt="image" src="https://github.com/user-attachments/assets/28e1bcdc-55af-4327-8b04-5e902539fd4b" />
+**6.** Se guarda el archivo con el nombre **`test.arff`**.
+
+<img width="986" height="287" alt="Captura de pantalla 2026-06-29 234632" src="https://github.com/user-attachments/assets/0890e414-757c-4d04-b48a-4ba1b16ddd7a" />
+
+### Construcción y aplicación del clasificador (NaiveBayes)
+
+**7.** En la pestaña **Preprocess** se hace clic en **Open file** y se carga el
+conjunto de entrenamiento `weather.nominal.arff`.
+
+**8.** En la pestaña **Classify** se elige el clasificador **NaiveBayes**.
+
+**9.** Se selecciona la opción **Supplied test set**, se hace clic en **Set** y,
+con **Open File**, se carga el archivo `test.arff`.
+
+**10.** En **More Options** se selecciona **PlainText** en **Output
+predictions**, para visualizar la predicción en texto plano.
+
+**11.** Se hace clic en **Start** para construir el clasificador y aplicarlo
+sobre la instancia de prueba.
+
+<img width="1365" height="765" alt="Captura de pantalla 2026-06-29 235421" src="https://github.com/user-attachments/assets/c91ce780-86c6-4eea-9f46-e916270cac8f" />
+
+### Aplicación del clasificador J48
+
+**12.** Se repite el procedimiento seleccionando ahora el clasificador **J48**,
+manteniendo el mismo conjunto de prueba (`test.arff`).
+
+<img width="1213" height="752" alt="Captura de pantalla 2026-06-29 235649" src="https://github.com/user-attachments/assets/023e8231-e1d6-4ba3-abfb-7414d2db0fbe" />
+
+---
+
+## Análisis de resultados
+
+Tras aplicar el clasificador **NaiveBayes** sobre la instancia de prueba, el
+modelo predijo el valor de la clase como **Play: Yes**. Este algoritmo se basa en
+el teorema de Bayes y calcula la probabilidad de cada clase a partir de los
+valores de los atributos, asumiendo independencia entre ellos; la clase con
+mayor probabilidad es la que se asigna como predicción.
+
+Al repetir el experimento con el clasificador **J48**, basado en árboles de
+decisión, se obtuvo el mismo resultado, **Play: Yes**. Esto indica que, para la
+instancia de prueba utilizada, ambos modelos coinciden en su predicción a pesar
+de emplear enfoques distintos: uno probabilístico (NaiveBayes) y otro basado en
+reglas derivadas de un árbol (J48).
+
+La coincidencia entre ambos clasificadores aporta mayor confianza en la
+predicción obtenida, ya que dos algoritmos con fundamentos diferentes llegan a la
+misma conclusión a partir de los mismos datos de entrenamiento.
+
+---
+
+## Implementación en Python
+
+Como resultado final, el árbol de decisión **J48** obtenido en Weka se tradujo a
+código Python mediante una estructura de condicionales `if/else`, junto con una
+interfaz interactiva construida con `ipywidgets` que permite ingresar los valores
+de los atributos y obtener la predicción de forma automática.
+
+El árbol J48 generado para el dataset `weather.nominal` es el siguiente:
+
+<img width="789" height="539" alt="image" src="https://github.com/user-attachments/assets/f52c1d6f-c53c-46d7-96f2-f100ac036e10" />
 
 
-**Interpretación del árbol:**
-
-El nodo raíz es `Loan_History`, lo que indica que esta variable tiene la mayor ganancia de información sobre la decisión crediticia:
-
-- Un historial **poor** lleva directamente a `risky` sin necesidad de evaluar otros atributos.
-- Un historial **good** lleva directamente a `safe`.
-- Un historial **average** requiere evaluar el nivel de `Income`:
-  - Si el ingreso es **low**, el resultado es `risky`.
-  - Si el ingreso es **high** o **medium**, se evalúa la `Age`: los clientes `young` resultan `risky`, mientras que `middle-aged` y `senior` resultan `safe`.
-
-### 3.3 Implementación en Python
-
-La lógica del árbol se tradujo a una función Python y se integró con `ipywidgets` para generar una interfaz interactiva en Jupyter Notebook.
-
-#### Función de clasificación
-
-```python
-def evaluar_riesgo(historial, ingreso, edad):
-
-    if historial == "poor":
-        return "Risky"
-
-    else:
-        if historial == "good":
-            return "Safe"
-
-        else:  # historial == "average"
-
-            if ingreso == "low":
-                return "Risky"
-
-            else:
-                if ingreso == "high":
-                    if edad == "young":
-                        return "Risky"
-                    else:  # middle-aged o senior
-                        return "Safe"
-
-                else:  # ingreso == "medium"
-                    if edad == "young":
-                        return "Risky"
-                    else:  # middle-aged o senior
-                        return "Safe"
-```
-
-La función replica fielmente la estructura del árbol J48: primero ramifica por historial, luego por ingreso, y finalmente por edad cuando corresponde.
-
-#### Interfaz interactiva con ipywidgets
+A partir de dicho árbol se desarrolló el siguiente código:
 
 ```python
 from IPython.display import display
 import ipywidgets as widgets
 
-# Dropdowns de entrada
-historial_input = widgets.Dropdown(
-    options=["poor", "average", "good"],
-    value="average",
-    description="Historial:"
+
+# Función que representa el árbol de decisión J48 generado en Weka
+# para el dataset weather.nominal
+def evaluar_juego(outlook, humidity, windy):
+
+    if outlook == "sunny":
+        if humidity == "high":
+            return "No"
+        else:  # humidity == "normal"
+            return "Yes"
+
+    elif outlook == "overcast":
+        return "Yes"
+
+    else:  # outlook == "rainy"
+        if windy == "TRUE":
+            return "No"
+        else:  # windy == "FALSE"
+            return "Yes"
+
+
+# Widget Outlook (estado del cielo)
+outlook_input = widgets.Dropdown(
+    options=["sunny", "overcast", "rainy"],
+    value="sunny",
+    description="Outlook:"
 )
 
-ingreso_input = widgets.Dropdown(
-    options=["low", "medium", "high"],
-    value="medium",
-    description="Ingreso:"
+# Widget Humidity (humedad)
+humidity_input = widgets.Dropdown(
+    options=["high", "normal"],
+    value="high",
+    description="Humidity:"
 )
 
-edad_input = widgets.Dropdown(
-    options=["young", "middleaged", "senior"],
-    value="young",
-    description="Edad:"
+# Widget Windy (viento)
+windy_input = widgets.Dropdown(
+    options=["TRUE", "FALSE"],
+    value="FALSE",
+    description="Windy:"
 )
 
-btn    = widgets.Button(description="Evaluar riesgo")
+# Botón
+btn = widgets.Button(description="Evaluar juego")
+
+# Salida
 output = widgets.Output()
+
 
 def on_button_clicked(b):
     with output:
         output.clear_output()
-        resultado = evaluar_riesgo(
-            historial_input.value,
-            ingreso_input.value,
-            edad_input.value
+
+        resultado = evaluar_juego(
+            outlook_input.value,
+            humidity_input.value,
+            windy_input.value
         )
-        print(f"Resultado: {resultado}")
+
+        print(f"Play: {resultado}")
+
 
 btn.on_click(on_button_clicked)
 
-display(historial_input, ingreso_input, edad_input, btn, output)
+display(
+    outlook_input,
+    humidity_input,
+    windy_input,
+    btn,
+    output
+)
 ```
 
-La interfaz despliega tres menús desplegables (uno por atributo predictor) y un botón que invoca la función de clasificación al hacer clic, mostrando el resultado en el widget de salida.
+### Caso de prueba
 
-### 3.4 Casos de Prueba
+Al ejecutar el código se despliega la interfaz con los menús desplegables; al
+seleccionar los valores y presionar el botón **Evaluar juego**, el programa
+muestra la predicción correspondiente.
 
-Se ejecutaron dos casos representativos para verificar el comportamiento del modelo:
-
-<img width="800" height="707" alt="image" src="https://github.com/user-attachments/assets/2596a2a3-7099-4a9d-8ef9-d2e3a72d1a21" />
-
-
-**Caso 1 — trayectoria en el árbol:**  
-`Loan_History = good` → nodo terminal → **Safe**
-
-**Caso 2 — trayectoria en el árbol:**  
-`Loan_History = average` → `Income = medium` → `Age = young` → **Risky**
-
-Ambos resultados coinciden con la lógica del árbol generado por Weka.
+<img width="491" height="189" alt="image" src="https://github.com/user-attachments/assets/be66017b-8e1b-4160-9e8b-7846252fc5a4" />
 
 ---
 
-## 4. Análisis
+## Conclusión
 
-### Variable más relevante: Historial Crediticio
+Mediante el ArffViewer de Weka se construyó una instancia de prueba con el
+atributo de clase en blanco y, utilizando los clasificadores **NaiveBayes** y
+**J48** sobre el conjunto `weather.nominal.arff`, se logró predecir el valor de
+la clase desconocida, obteniendo en ambos casos el resultado **Play: Yes**.
 
-El árbol J48 seleccionó `Loan_History` como nodo raíz porque es el atributo con mayor ganancia de información. Esto tiene sentido contextualmente: el comportamiento previo de pago de un cliente es el predictor más directo de su riesgo futuro. Los valores `poor` y `good` resuelven el 67.5% de las instancias (675 de 1000) sin necesidad de atributos adicionales.
-
-### Rol secundario del Ingreso y la Edad
-
-Cuando el historial es `average`, el modelo recurre al nivel de ingreso como segundo discriminante. Un ingreso `low` es suficiente para clasificar como `risky` (114 instancias), mientras que ingresos `high` o `medium` requieren también la edad del cliente. La variable `Age` actúa como desempate final: los clientes `young` con historial promedio y buenos ingresos siguen siendo considerados riesgosos, posiblemente por menor estabilidad financiera.
-
-### Legibilidad del modelo
-
-Una ventaja clave de los árboles de decisión frente a modelos como redes neuronales o SVM es su interpretabilidad directa. La función `evaluar_riesgo` es una traducción línea a línea del árbol; cualquier analista puede seguir el razonamiento del modelo sin conocimientos técnicos avanzados.
-
-### Limitaciones observadas
-
-- El árbol no captura interacciones más complejas (e.g., un cliente `young` con historial `good` e ingreso `low` podría tener un perfil distinto del árbol actual).
-- Al tratarse de variables todas categóricas y discretas, el modelo no generaliza a rangos numéricos reales (edad en años, ingreso en dólares).
-- El dataset de 1000 instancias es suficiente para una práctica, pero pequeño para un sistema crediticio real.
-
----
-
-## 5. Conclusión
-
-- El laboratorio demostró el flujo completo de aplicación de un árbol de decisión para clasificación binaria en un contexto financiero: desde la carga del dataset en formato ARFF hasta la construcción visual del árbol en Weka y su posterior implementación como función Python con interfaz interactiva.
-
-- El modelo J48 identificó correctamente que el historial crediticio es el factor más determinante para la evaluación de riesgo, seguido del nivel de ingreso y, en casos ambiguos, de la edad del solicitante. Los dos casos de prueba ejecutados confirmaron que la implementación en Python replica fielmente la lógica del árbol generado por Weka.
-
-- Este tipo de modelos representa una herramienta valiosa para automatizar decisiones crediticias de forma auditable y explicable, lo que es especialmente importante en contextos regulados donde se debe justificar el rechazo o aprobación de un préstamo.
+La práctica permitió comprender el flujo completo de un proceso de clasificación
+en Weka: la preparación de los datos, la separación de una instancia de prueba,
+la configuración del conjunto de evaluación y la interpretación de la predicción.
+Asimismo, se evidenció que distintos algoritmos pueden coincidir en sus
+resultados, lo que refuerza la utilidad de los modelos de clasificación para
+predecir valores en instancias nuevas y desconocidas.
